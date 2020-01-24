@@ -232,16 +232,17 @@ android:textColor="?attr/buttonTextColor"
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal">
 
-                                <az.plainpie.PieView
-                                    xmlns:plainpie="http://schemas.android.com/apk/res-auto"
-                                    android:id="@+id/pieView"
-                                    android:layout_width="72dp"
-                                    android:layout_height="73dp"
-                                    android:visibility="gone"
-                                    plainpie:inner_pie_padding="10"
-                                    plainpie:inner_text_visibility="true"
-                                    plainpie:percentage="75"
-                                    plainpie:percentage_size="15"/>
+                             						<com.ramijemli.percentagechartview.PercentageChartView
+                                android:id="@+id/pieView"
+                                android:layout_width="60dp"
+                                android:layout_height="60dp"
+                                android:layout_marginTop="7dp"
+								app:pcv_mode="ring"
+								app:pcv_orientation="clockwise"
+								app:pcv_animDuration="800"
+								app:pcv_animInterpolator="anticipate_overshoot"
+								app:pcv_progress="10"
+								app:pcv_startAngle="90"/>
 
                                 <com.google.android.material.button.MaterialButton 
 android:textColor="?attr/buttonTextColor"

@@ -45,14 +45,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.ramijemli.percentagechartview.PercentageChartView;
+import com.ramijemli.percentagechartview.callback.ProgressTextFormatter;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import az.plainpie.PieView;
-import az.plainpie.animation.PieAngleAnimation;
 import github.nisrulz.recyclerviewhelper.RVHAdapter;
 import github.nisrulz.recyclerviewhelper.RVHViewHolder;
 import nl.hnogames.domoticz.R;
@@ -177,11 +177,7 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Data
         if (filteredData != null && filteredData.size() >= position) {
             DevicesInfo extendedStatusInfo = filteredData.get(position);
 
-            holder.pieView.setPercentageTextSize(16);
-            holder.pieView.setPercentageBackgroundColor(ContextCompat.getColor(context, R.color.material_orange_600));
-
             setSwitchRowData(extendedStatusInfo, holder);
-
             holder.infoIcon.setTag(extendedStatusInfo.getIdx());
             holder.infoIcon.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -447,19 +443,16 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Data
                     double temp = mDeviceInfo.getTemperature();
                     if (tempSign != null && !tempSign.equals("C"))
                         temp = temp / 2;
-                    holder.pieView.setPercentage(Float.valueOf(temp + ""));
-                    holder.pieView.setInnerText(mDeviceInfo.getTemperature() + " " + tempSign);
-                    if ((!UsefulBits.isEmpty(tempSign) && tempSign.equals("C") && mDeviceInfo.getTemperature() < 0) ||
-                            (!UsefulBits.isEmpty(tempSign) && tempSign.equals("F") && mDeviceInfo.getTemperature() < 30))
-                        holder.pieView.setPercentageBackgroundColor(ContextCompat.getColor(context, R.color.material_blue_600));
-                    else
-                        holder.pieView.setPercentageBackgroundColor(ContextCompat.getColor(context, R.color.material_orange_600));
 
-                    if (!mSharedPrefs.getAutoRefresh()) {
-                        PieAngleAnimation animation = new PieAngleAnimation(holder.pieView);
-                        animation.setDuration(2000);
-                        holder.pieView.startAnimation(animation);
-                    }
+                    holder.pieView.setProgress(Float.valueOf(temp + ""), true);
+                    final String finalTempSign = tempSign;
+                    holder.pieView.setTextFormatter(new ProgressTextFormatter() {
+                        @Override
+                        public String provideFormattedText(float progress) {
+                            return progress + " " + finalTempSign;
+                        }
+                    });
+
                     if (!mSharedPrefs.showExtraData())
                         holder.switch_battery_level.setVisibility(View.GONE);
                 } else
@@ -858,20 +851,14 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Data
             if (!UsefulBits.isEmpty(sign) && !sign.equals("C"))
                 temp = temp / 2;
 
-            holder.pieView.setPercentageTextSize(16);
-            holder.pieView.setPercentage(Float.valueOf(temp + ""));
-            holder.pieView.setInnerText(temperature + " " + sign);
-
-            holder.pieView.setPercentageBackgroundColor(ContextCompat.getColor(context, R.color.material_orange_600));
-            if ((sign.equals("C") && temperature < 0) || (sign.equals("F") && temperature < 30)) {
-                holder.pieView.setPercentageBackgroundColor(R.color.md_red_600);
-            }
-
-            if (!mSharedPrefs.getAutoRefresh()) {
-                PieAngleAnimation animation = new PieAngleAnimation(holder.pieView);
-                animation.setDuration(2000);
-                holder.pieView.startAnimation(animation);
-            }
+            holder.pieView.setProgress(Float.valueOf(temp + ""), true);
+            final String finalTempSign = sign;
+            holder.pieView.setTextFormatter(new ProgressTextFormatter() {
+                @Override
+                public String provideFormattedText(float progress) {
+                    return progress + " " + finalTempSign;
+                }
+            });
         }
 
         if (holder.iconMode != null) {
@@ -2021,7 +2008,7 @@ public class DashboardAdapter extends RecyclerView.Adapter<DashboardAdapter.Data
         Spinner spSelector;
         LinearLayout extraPanel, clockLayoutWrapper;
         RelativeLayout details;
-        PieView pieView;
+        PercentageChartView pieView;
         ImageView infoIcon;
         ClockImageView clock, sunrise, sunset;
         LinearLayout clockLayout, sunriseLayout, sunsetLayout;

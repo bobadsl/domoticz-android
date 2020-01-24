@@ -37,6 +37,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.chip.Chip;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
+import com.ramijemli.percentagechartview.PercentageChartView;
+import com.ramijemli.percentagechartview.callback.ProgressTextFormatter;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
@@ -45,8 +47,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import az.plainpie.PieView;
-import az.plainpie.animation.PieAngleAnimation;
 import github.nisrulz.recyclerviewhelper.RVHAdapter;
 import github.nisrulz.recyclerviewhelper.RVHViewHolder;
 import nl.hnogames.domoticz.R;
@@ -207,18 +207,17 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.DataObje
                 holder.data.append(", " + context.getString(R.string.temp) + ": " + mWeatherInfo.getTemp() + " " + tempSign);
 
                 holder.pieView.setVisibility(View.VISIBLE);
-                holder.pieView.setPercentageTextSize(16);
-                holder.pieView.setPercentageBackgroundColor(ContextCompat.getColor(context, R.color.material_orange_600));
-
                 double temp = mWeatherInfo.getTemp();
                 if (!tempSign.equals("C"))
                     temp = temp / 2;
-                holder.pieView.setPercentage(Float.valueOf(temp + ""));
-                holder.pieView.setInnerText(mWeatherInfo.getTemp() + " " + tempSign);
-
-                PieAngleAnimation animation = new PieAngleAnimation(holder.pieView);
-                animation.setDuration(2000);
-                holder.pieView.startAnimation(animation);
+                holder.pieView.setProgress(Float.valueOf(temp + ""), true);
+                final String finalTempSign = tempSign;
+                holder.pieView.setTextFormatter(new ProgressTextFormatter() {
+                    @Override
+                    public String provideFormattedText(float progress) {
+                        return progress + " " + finalTempSign;
+                    }
+                });
             } else {
                 holder.pieView.setVisibility(View.GONE);
             }
@@ -333,7 +332,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.DataObje
         Chip weekButton;
         LikeButton likeButton;
         LinearLayout extraPanel;
-        PieView pieView;
+        PercentageChartView pieView;
         ImageView infoIcon;
 
         public DataObjectHolder(View itemView) {

@@ -265,15 +265,14 @@
                             android:orientation="horizontal"
                             android:paddingBottom="5dp">
 
-                            <az.plainpie.PieView
+						<com.ramijemli.percentagechartview.PercentageChartView
                                 android:id="@+id/pieView"
                                 android:layout_width="60dp"
                                 android:layout_height="60dp"
                                 android:layout_marginTop="7dp"
-                                plainpie:inner_pie_padding="5"
-                                plainpie:inner_text_visibility="true"
-                                plainpie:percentage="50"
-                                plainpie:percentage_size="8"/>
+								app:pcv_mode="ring"
+								app:pcv_progress="10"
+								app:pcv_startAngle="90"/>
 
                             <com.google.android.material.switchmaterial.SwitchMaterial
                                 android:id="@+id/switch_button"
